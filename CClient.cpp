@@ -165,19 +165,20 @@ long CClient::sendMsg(std::string &msg){
     return len;//cantidad de bytes enviados al cliente.
 }
 
-int CClient::rcvMsg(std::string &msg){
+long CClient::rcvMsg(std::string &msg){
     LOG("Estoy recibiendo un mensaje");
-    int status = 0;
-    int len = 2048;
+    long status = 0;
+    int len = 512;
     char mesage[len];
     
-    if((status = recv(mSocket, &mesage, len - 1, 0) == -1)){
+    if((status = recv(mSocket, &mesage, len - 1, 0)) == -1){
         perror("Error receiving message");
         LOG("# error: "<<status)
         sleep(3);
         return -1;
     }
-    //mesage[status] = '\0';
+    LOG("Caracteres:::"<<status)
+    mesage[status] = '\0';
     msg = mesage;
     boost::property_tree::ptree p(msg);
     

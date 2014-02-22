@@ -46,7 +46,7 @@ public:
     
     //  comunication with clients
     long sendMsg(std::string& msg);
-    int rcvMsg(std::string& msg);
+    long rcvMsg(std::string& msg);
     
     // get data coordinates and thread
     static void handle_vrpn(void *userdata, vrpn_TRACKERCB track);
