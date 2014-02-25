@@ -79,10 +79,8 @@ void CServer::run(){
     while (!mStart) {
         LOG("Wait for client")
         int client_fd = waitForClient();
-        
-        mMESSAGE = "marcos alvarado";
+
         CClient client(client_fd);
-        client.setAgents(&mAgentes);
         clientes.insert(std::make_pair(index, std::move(client)));
         std::string msg;
         clientes.find(0)->second.rcvMsg(msg);
@@ -100,22 +98,26 @@ void CServer::run(){
     }
     
     while (true) {
-        mover(mAgentes);
+        std::srand((int)std::time(NULL));
+        MOVER(mAgentes);//
         
         std::map<int,CClient>::iterator iter = clientes.begin();
         while (iter != clientes.end())
         {
             
-            std::string msg = iter->second.getMsg();
+            std::string msg;
+            
+            BUILD_MESSAGE_AGENTS(mAgentes, msg);
             LOG(msg)
             if(iter->second.sendMsg(msg) == -1){
+                perror("Error sending message");
                 break;
             }
             //std::string m;
             //iter->second.rcvMsg(m);
             iter++;
         }
-        sleep(3);LOG("WAITING TO FINISH")
+        LOG(" = WAITING TO FINISH =")
     }
 }
 

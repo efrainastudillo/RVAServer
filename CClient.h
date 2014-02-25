@@ -28,6 +28,7 @@
 
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
+#include "boost/thread.hpp"
 
 namespace rva {
 
@@ -56,7 +57,8 @@ public:
     
     void setupVrpn();
     std::string getMsg();
-    void setAgents(std::vector<CClient> * agents);
+    std::string getMsgRobots();
+    
 private:
     std::thread *mThread;
     vrpn_Tracker_Remote *   mTracker;
@@ -65,21 +67,27 @@ private:
     int mSocket;
     static std::string mMessage;
     
+    boost::mutex mMutex;
     
     std::vector<CClient>* mFalseAgents;
     
-    int mID;
+    
     std::string mTrackerName;
+    
 public:
+    int mID;
     float mX;
     float mY;
+    float mZ;
     int mD;
     int mK;
+    int mActivo;
     
     // flags to manipulate the logic game
 private:
     bool mGameOver;
     int mRobot;
+    
 };
 
 }
@@ -87,7 +95,7 @@ private:
 
 
 
-inline static void mover(std::vector<rva::CClient>& agentes){
+inline static void MOVER(std::vector<rva::CClient>& agentes){
     int i,j,m;
 	for (i=0;i<agentes.size();i++){
 		if (agentes[i].mK==0){
@@ -134,4 +142,17 @@ inline static void mover(std::vector<rva::CClient>& agentes){
 	}
 }
 
+inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::string & msg){
+    char buffer[1024] = {0};
+    std::vector<rva::CClient>::iterator iter = agents.begin();
+    while (iter != agents.end()) {
+        sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
+        //mMessage.append(buffer);
+        iter++;
+        LOG(buffer)
+    }
+    // id,activo,x,y,z,robot
+    
+    msg = std::move(std::string(buffer));
+}
 #endif /* defined(__SocketRVA__CClient__) */

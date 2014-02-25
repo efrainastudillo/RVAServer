@@ -18,6 +18,8 @@ CClient::CClient()// : mX(a),mY(b),mD(c),mK(d),mSocket(s),mID(i),mGameOver(go),m
     mY = rand()%10;
     mD = rand()%2;
     mK = 0;
+    mZ = rand()%10;
+    mActivo = 1;
     
     mSocket = 0;
     mID = 0;
@@ -34,6 +36,8 @@ CClient::CClient(int sockt) : mSocket(sockt){
     mY = rand()%10;
     mD = rand()%2;
     mK = 0;
+    mZ = rand()%10;
+    mActivo = 1;
     
     mID = 0;
     mGameOver = false;
@@ -44,7 +48,7 @@ CClient::CClient(int sockt) : mSocket(sockt){
 }
 
 CClient::CClient(const CClient& cli){
-    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;
+    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
     mGameOver = cli.mGameOver;
@@ -54,7 +58,7 @@ CClient::CClient(const CClient& cli){
     mThread = cli.mThread;
 }
 CClient::CClient(CClient&& cli){
-    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;
+    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK; mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
     mGameOver = cli.mGameOver;
@@ -63,7 +67,7 @@ CClient::CClient(CClient&& cli){
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
 
-    cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;
+    cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
     cli.mID = 0;
     cli.mGameOver = false;
@@ -73,7 +77,7 @@ CClient::CClient(CClient&& cli){
     cli.mThread = NULL;
 }
 CClient& CClient::operator=(const CClient& cli){
-    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;
+    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
     mGameOver = cli.mGameOver;
@@ -84,7 +88,7 @@ CClient& CClient::operator=(const CClient& cli){
     return *this;
 }
 CClient& CClient::operator=(CClient&& cli){
-    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;
+    mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
     mGameOver = cli.mGameOver;
@@ -93,7 +97,7 @@ CClient& CClient::operator=(CClient&& cli){
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
     
-    cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;
+    cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
     cli.mID = 0;
     cli.mGameOver = false;
@@ -125,6 +129,7 @@ void CClient::setupVrpn(){
 
 }
 //========================   handle Vrpn    =========================
+// Aqui se obtiene los datos que envia el VRPN
 void CClient::handle_vrpn(void *userdata,vrpn_TRACKERCB track){
     char buffer[256];
     sprintf(buffer, "%f,%f",track.pos[0],track.pos[1]);
@@ -135,6 +140,7 @@ void CClient::handle_vrpn(void *userdata,vrpn_TRACKERCB track){
 void CClient::run(){
     while (!mGameOver)
     {
+        // este lazo es solo para lo que Roger me pidio (hacer pruebas)
         if (mRobot == 1)// si es una persona
         {
             mTracker->mainloop();
@@ -145,7 +151,7 @@ void CClient::run(){
         {
             //mover jugador, actualizar coordenadas
             sleep(1);
-            LOG("MSG: "<<getMsg())
+            LOG("MSG: "<< mMessage)
         }
         LOG("Estoy en el cliente")
         sleep(5);
@@ -153,7 +159,7 @@ void CClient::run(){
     LOG("!!BYE!!")
 }
 //========================   thread     =============================
-
+// send a message to user through socket and receive how many bytes you sent
 long CClient::sendMsg(std::string &msg){
     long len = 0;
     if((len = send(mSocket, msg.c_str(), msg.length(),0)) == -1)
@@ -164,7 +170,7 @@ long CClient::sendMsg(std::string &msg){
     LOG("# bytes enviados : "<<len)
     return len;//cantidad de bytes enviados al cliente.
 }
-
+// return number of bytes received on mesage and data is contained on msg
 long CClient::rcvMsg(std::string &msg){
     LOG("Estoy recibiendo un mensaje");
     long status = 0;
@@ -174,10 +180,8 @@ long CClient::rcvMsg(std::string &msg){
     if((status = recv(mSocket, &mesage, len - 1, 0)) == -1){
         perror("Error receiving message");
         LOG("# error: "<<status)
-        sleep(3);
         return -1;
     }
-    LOG("Caracteres:::"<<status)
     mesage[status] = '\0';
     msg = mesage;
     boost::property_tree::ptree p(msg);
@@ -195,24 +199,16 @@ std::string CClient::getMsg(){
     boost::property_tree::write_json(ss, ptre,false);
     ss.str().c_str();*/
     
-    mMessage ="";
-    char buffer[1024] = {0};
-    std::vector<CClient>::iterator iter = mFalseAgents->begin();
-    while (iter != mFalseAgents->end()) {
-        sprintf(buffer, "%f,%f,%d" ,iter->mX,iter->mY,iter->mD);
-        mMessage.append(buffer);
-        iter++;
-        LOG(mMessage)
-    }
-    sprintf(buffer, "%f,%f,%d" ,mX,mY,mD);
-    mMessage.append(buffer);
-    return mMessage;
+    //mMessage = getMsgRobots();
+
+    return getMsgRobots();
+}
+
+std::string CClient::getMsgRobots(){
+    return "";
 }
 
 int CClient::getSocket(){
     return mSocket;
 }
 
-void CClient::setAgents(std::vector<CClient> *agents){
-    mFalseAgents = agents;
-}

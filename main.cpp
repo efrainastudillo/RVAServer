@@ -15,10 +15,7 @@
 
 int main(int argc, const char * argv[])
 {
-    
-    
     rva::CServer server(7777);
-
     server.connect();
     server.start();
     
@@ -28,7 +25,6 @@ int main(int argc, const char * argv[])
         LOG("Estoy en el main")
         sleep(6);
     }
-    
     
     server.joinThread();
     
