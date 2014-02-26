@@ -100,15 +100,12 @@ void CServer::run(){
     while (true) {
         std::srand((int)std::time(NULL));
         MOVER(mAgentes);//
-        
+        std::string msg;
+        BUILD_MESSAGE_AGENTS(mAgentes, msg);
+        LOG(msg)
         std::map<int,CClient>::iterator iter = clientes.begin();
         while (iter != clientes.end())
         {
-            
-            std::string msg;
-            
-            BUILD_MESSAGE_AGENTS(mAgentes, msg);
-            LOG(msg)
             if(iter->second.sendMsg(msg) == -1){
                 perror("Error sending message");
                 break;

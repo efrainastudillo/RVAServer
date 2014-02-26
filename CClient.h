@@ -143,6 +143,13 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 }
 
 inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::string & msg){
+    boost::property_tree::ptree ptre;
+     
+     //ptre.put("id", );
+     std::stringstream ss;
+     boost::property_tree::write_json(ss, ptre,false);
+     ss.str().c_str();
+    
     char buffer[1024] = {0};
     std::vector<rva::CClient>::iterator iter = agents.begin();
     while (iter != agents.end()) {
