@@ -1,0 +1,25 @@
+ #sudo g++ -W -Wall -Wextra -pedantic -I/home/gianina/Escritorio/vrpn/ -L~/home/gianina/Escritorio/vrpn/pc_linux64/ -lvrpnserver -std=c++0x *.cpp -o output
+ sudo g++ -std=c++0x -I/home/gianina/Escritorio/vrpn/ -L/home/gianina/Escritorio/vrpn/pc_linux64 *.cpp -o output -lvrpn -lvrpnserver -lpthread
+ 
+
+Miércoles 26 Feb
+sudo g++ -std=c++0x -I/home/roger/Desktop/ProyectoRVA2doParcial/vrpn/ -L/home/roger/Desktop/ProyectoRVA2doParcial/vrpn/pc_linux64 *.cpp -o output -lvrpn -lvrpnserver -lpthread -lboost_thread -lboost_system
+
+
+
+  703  sudo apt-get install libboost-system-dev 
+  721  sudo apt-get install g++
+  722  sudo apt-get install build-essential 
+  710  cd Escritorio/
+  713  cd vrpn
+  715  make
+  716  cd server
+  718  cd server_src/
+  719  make
+ 
+  726  cd server_src/
+  788  sudo g++ -std=c++0x -I/home/roger/Desktop/ProyectoRVA2doParcial/vrpn/ -L/home/roger/Desktop/ProyectoRVA2doParcial/vrpn/pc_linux64 *.cpp -o output -lvrpn -lvrpnserver -lpthread
+  798  cd SocketRVA
+  799  ls
+  800  ./output
+

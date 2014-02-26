@@ -7,7 +7,6 @@
 //
 
 #include "CConnection.h"
-#include <cstring>
 #include <sstream>
 using namespace rva;
 
