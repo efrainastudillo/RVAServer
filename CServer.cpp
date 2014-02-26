@@ -103,6 +103,7 @@ void CServer::run(){
         std::string msg;
         BUILD_MESSAGE_AGENTS(mAgentes, msg);
         LOG(msg)
+        sleep(2);
         std::map<int,CClient>::iterator iter = clientes.begin();
         while (iter != clientes.end())
         {

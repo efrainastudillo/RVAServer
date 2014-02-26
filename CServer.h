@@ -42,7 +42,7 @@ namespace rva {
         
     private:
         std::thread * mThread;
-        std::mutex mMutex;
+        boost::mutex mMutex;
         rva::CConnection mConn;
         static std::string mMESSAGE;
         int mPort;
