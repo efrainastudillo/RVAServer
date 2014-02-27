@@ -10,10 +10,6 @@ sudo g++ -std=c++0x -I/home/roger/Desktop/ProyectoRVA2doParcial/vrpn/ -L/home/ro
   703  sudo apt-get install libboost-system-dev 
   721  sudo apt-get install g++
   722  sudo apt-get install build-essential 
-	
-THREAD	
-	sudo apt-get install libboost-thread-dev
-
   710  cd Escritorio/
   713  cd vrpn
   715  make
