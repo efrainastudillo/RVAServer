@@ -59,6 +59,8 @@ public:
     std::string getMsg();
     std::string getMsgRobots();
     
+    void setNameTracker(std::string);
+    
 private:
     std::thread *mThread;
     vrpn_Tracker_Remote *   mTracker;
@@ -156,7 +158,7 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::s
         sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
         //mMessage.append(buffer);
         iter++;
-        LOG(buffer)
+        //LOG(buffer)
     }
     // id,activo,x,y,z,robot
     

@@ -15,7 +15,7 @@
 
 int main(int argc, const char * argv[])
 {
-    rva::CServer server(7777);
+    /*rva::CServer server(7777);
     server.connect();
     server.start();
     
@@ -25,8 +25,19 @@ int main(int argc, const char * argv[])
         LOG("Estoy en el main")
         sleep(6);
     }
+     */
     
-    server.joinThread();
+    std::vector<rva::CClient> magentes;
+    
+    magentes.push_back(rva::CClient());
+    
+    std::string msg;
+    
+    BUILD_MESSAGE_AGENTS(magentes, msg);
+    
+    LOG(msg)
+    
+    //server.joinThread();
     
     return 0;
 }

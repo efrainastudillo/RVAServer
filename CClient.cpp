@@ -212,3 +212,6 @@ int CClient::getSocket(){
     return mSocket;
 }
 
+void CClient::setNameTracker(std::string msg){
+    mTrackerName = msg;
+}

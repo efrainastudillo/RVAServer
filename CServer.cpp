@@ -79,10 +79,12 @@ void CServer::run(){
     while (!mStart) {
         LOG("Wait for client")
         int client_fd = waitForClient();
-
-        CClient client(client_fd);
-        clientes.insert(std::make_pair(index, std::move(client)));
         std::string msg;
+        CClient client(client_fd);
+        client.rcvMsg(msg);
+        client.setNameTracker(msg);
+        clientes.insert(std::make_pair(index, std::move(client)));
+        //std::string msg;
         clientes.find(0)->second.rcvMsg(msg);
         
         //boost::property_tree::ptree p;
