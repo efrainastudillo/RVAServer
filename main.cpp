@@ -13,6 +13,11 @@
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
 
+void handle_function(void *userdata,vrpn_TRACKERCB track){
+    std::cout<< "pos[0]: "<<track.pos[0]<<"pos[1]: "<<track.pos[1]<< "pos[2]: "<<track.pos[2]<<"quat[0]: "<<track.quat[0]<<"quat[1]: "<<track.quat[1]<<"quat[2]: "<<track.quat[2]<< "quat[3]: "<<track.quat[3]<<"sensor: "<<track.sensor<<std::endl;
+    // sprintf(MESSAGE, "%f",track.pos[0]);
+}
+
 int main(int argc, const char * argv[])
 {
     /*rva::CServer server(7777);
@@ -26,6 +31,20 @@ int main(int argc, const char * argv[])
         sleep(6);
     }
      */
+    vrpn_Connection *connection;
+    
+    char connectionName[128];
+    int  port = 3883;
+    
+    sprintf(connectionName,"200.126.23.195:%d", port);
+    
+    connection = vrpn_get_connection_by_name(connectionName);
+    
+    vrpn_Tracker_Remote *tracker = new vrpn_Tracker_Remote("Camara", connection);
+    
+    tracker->register_change_handler(NULL, handle_function);
+    //tracker->unregister_change_handler(NULL, handle_function);
+    
     
     std::vector<rva::CClient> magentes;
     
@@ -37,6 +56,17 @@ int main(int argc, const char * argv[])
     
     LOG(msg)
     
+    
+    
+    
+    
+    // recibe los datos del vrpn
+    while(true)
+    {
+        tracker->mainloop();
+        connection->mainloop();
+        usleep(500000);
+    }
     //server.joinThread();
     
     return 0;
