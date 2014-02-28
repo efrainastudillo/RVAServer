@@ -30,8 +30,12 @@
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/thread.hpp"
 
-namespace rva {
 
+
+namespace rva {
+    
+    enum{ES_ESPIA = 0, ES_ROBOT ,ES_DETECTIVE};
+    
 class CClient{
 public:
     
@@ -89,6 +93,7 @@ public:
 private:
     bool mGameOver;
     int mRobot;
+    bool mInicio;
     
 };
 

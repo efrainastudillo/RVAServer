@@ -85,7 +85,7 @@ void CServer::run(){
         client.setNameTracker(msg);
         clientes.insert(std::make_pair(index, std::move(client)));
         //std::string msg;
-        clientes.find(0)->second.rcvMsg(msg);
+        //clientes.find(0)->second.rcvMsg(msg);
         
         //boost::property_tree::ptree p;
         //std::stringstream ss;

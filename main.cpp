@@ -20,18 +20,19 @@ void handle_function(void *userdata,vrpn_TRACKERCB track){
 
 int main(int argc, const char * argv[])
 {
-    /*rva::CServer server(7777);
+    rva::CServer server(7777);
     server.connect();
     server.start();
-    
     
     // main process
     while (true) {
         LOG("Estoy en el main")
         sleep(6);
     }
-     */
-    vrpn_Connection *connection;
+     
+    server.joinThread();
+    
+   /* vrpn_Connection *connection;
     
     char connectionName[128];
     int  port = 3883;
@@ -66,8 +67,8 @@ int main(int argc, const char * argv[])
         tracker->mainloop();
         connection->mainloop();
         usleep(500000);
-    }
-    //server.joinThread();
+    }*/
+    
     
     return 0;
 }

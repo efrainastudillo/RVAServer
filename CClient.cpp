@@ -10,6 +10,7 @@
 // ===================  constructores   ========================//
 using namespace rva;
 
+
 std::string CClient::mMessage = "";
 
 CClient::CClient()// : mX(a),mY(b),mD(c),mK(d),mSocket(s),mID(i),mGameOver(go),mTrackerName(""),mRobot(1),mFalseAgents(mf),mThread(t)
@@ -20,6 +21,7 @@ CClient::CClient()// : mX(a),mY(b),mD(c),mK(d),mSocket(s),mID(i),mGameOver(go),m
     mK = 0;
     mZ = rand()%10;
     mActivo = 1;
+    mInicio = false;
     
     mSocket = 0;
     mID = 0;
@@ -38,6 +40,7 @@ CClient::CClient(int sockt) : mSocket(sockt){
     mK = 0;
     mZ = rand()%10;
     mActivo = 1;
+    mInicio = false;
     
     mID = 0;
     mGameOver = false;
@@ -56,6 +59,7 @@ CClient::CClient(const CClient& cli){
     mRobot = cli.mRobot;
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
+    mInicio = cli.mInicio;
 }
 CClient::CClient(CClient&& cli){
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK; mZ = cli.mZ; mActivo = cli.mActivo;
@@ -66,6 +70,7 @@ CClient::CClient(CClient&& cli){
     mRobot = cli.mRobot;
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
+    mInicio = cli.mInicio;
 
     cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
@@ -85,6 +90,8 @@ CClient& CClient::operator=(const CClient& cli){
     mRobot = cli.mRobot;
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
+    mInicio = cli.mInicio;
+    
     return *this;
 }
 CClient& CClient::operator=(CClient&& cli){
@@ -123,6 +130,7 @@ void CClient::setupVrpn(){
     
     //  debo obtener el nombre del tracker mediandte la red mTrackerName = rcvMsg()
     
+    
     mTracker = new vrpn_Tracker_Remote(mTrackerName.c_str(), mConnectionVrpn);
     
     mTracker->register_change_handler(NULL, handle_vrpn);
@@ -138,21 +146,34 @@ void CClient::handle_vrpn(void *userdata,vrpn_TRACKERCB track){
 
 //========================   thread     =============================
 void CClient::run(){
+    std::string msg;
+    long bytes = 0;
+
     while (!mGameOver)
     {
-        // este lazo es solo para lo que Roger me pidio (hacer pruebas)
-        if (mRobot == 1)// si es una persona
-        {
-            mTracker->mainloop();
-            mConnectionVrpn->mainloop();
-            usleep(7000);
+        if (mRobot != ES_ROBOT) {
+            bytes = rcvMsg(msg);
             
-        }else // es un jugador falso
-        {
-            //mover jugador, actualizar coordenadas
-            sleep(1);
-            LOG("MSG: "<< mMessage)
+            if (!mInicio) {
+                
+                boost::property_tree::ptree p;
+                std::stringstream ss;
+                ss << msg;
+                boost::property_tree::read_json(ss, p);
+                LOG(p.get<std::string>("mensaje"));
+                //mTrackerName = p.get<std::string>("mensaje");
+                //setupVrpn();
+                mInicio = true;
+                
+            }else{
+            
+                //mTracker->mainloop();
+                //mConnectionVrpn->mainloop();
+                usleep(7000);
+
+            }
         }
+        
         LOG("Estoy en el cliente")
         sleep(5);
     }
