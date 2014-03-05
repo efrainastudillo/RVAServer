@@ -75,56 +75,46 @@ void CServer::start(){
 
 // thread para obtener a cada cliente en la comunicacion por la red
 void CServer::run(){
-    int index = 0;
-    while (!mStart) {
+    int index = 3; //El id de 0 - 2 son los falsos
+    while (CGame::getInstance().mCantidadEspias < CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
         LOG("Wait for client")
         int client_fd = waitForClient();
-        std::string msg;
         CClient client(client_fd);
-        client.rcvMsg(msg);
-        client.setNameTracker(msg);
-        clientes.insert(std::make_pair(index, std::move(client)));
-        //std::string msg;
-        //clientes.find(0)->second.rcvMsg(msg);
-        
-        //boost::property_tree::ptree p;
-        //std::stringstream ss;
-        //ss << msg;
-        //boost::property_tree::read_json(ss, p);
-        //LOG(p.get<std::string>("modo_juego"));
-        LOG(msg)
-        mStart = true;
-        LOG(client_fd)
-        index ++;
-        //clientes.find(0)->second.sendMsg(mMESSAGE);
+        client.mID = index;
+        clientes.insert(std::make_pair(index, client));
+        index++;
+        CGame::getInstance().mCantidadEspias++;
     }
     
-    while (true) {
-        std::srand((int)std::time(NULL));
+    LOG("Wait for Detective")
+    int client_fd = waitForClient();
+    CClient client(client_fd,2);//detective
+    client.mID = index;
+    clientes.insert(std::make_pair(index, client));
+
+
+    while (!mStart) {
+        if(!CGame::getInstance().mIniciarJuego){
+           // continue;
+        }
+        std::srand((int)std::time(0));
         MOVER(mAgentes);//
         std::string msg;
-        BUILD_MESSAGE_AGENTS(mAgentes, msg);
-        LOG(msg)
-        sleep(2);
-        std::map<int,CClient>::iterator iter = clientes.begin();
-        while (iter != clientes.end())
-        {
-            if(iter->second.sendMsg(msg) == -1){
-                perror("Error sending message");
-                break;
-            }
-            //std::string m;
-            //iter->second.rcvMsg(m);
-            iter++;
-        }
+        //BUILD_MESSAGE_AGENTS(mAgentes, clientes);
+
+        CGame::getInstance().lockLog();
         LOG(" = WAITING TO FINISH =")
+        CGame::getInstance().unlockLog();
     }
 }
 
 // configuracion inicial del socket para la comunicacion (socket, bind,  listen)
 void CServer::connect(){
+    // inicializacion de los agentes falsos
     rva::CClient c{};
+    
     for (int i = 0 ; i < 3;  i++) {
+        c.mID = i;
         mAgentes.push_back(c);
     }
     mConn.initialize();

@@ -36,70 +36,98 @@ namespace rva {
     
     enum{ES_ESPIA = 0, ES_ROBOT ,ES_DETECTIVE};
     
-class CClient{
-public:
-    
-    CClient();
-    CClient(int sockt);
+    class CClient{
+    public:
+        
+        CClient();
+        CClient(int sockt,int mtype_client = 0);
 
-    CClient(const CClient& cli);
-    CClient(CClient&& cli);
-    CClient& operator=(const CClient& cli);
-    CClient& operator=(CClient&& cli);
-    
-    ~CClient();
-    
-    //  comunication with clients
-    long sendMsg(std::string& msg);
-    long rcvMsg(std::string& msg);
-    
-    // get data coordinates and thread
-    static void handle_vrpn(void *userdata, vrpn_TRACKERCB track);
-    void run();
+        CClient(const CClient& cli);
+        CClient(CClient&& cli);
+        CClient& operator=(const CClient& cli);
+        CClient& operator=(CClient&& cli);
+        
+        ~CClient();
+        
+        //  comunication with clients
+        long sendMsg(std::string& msg);
+        long rcvMsg(std::string& msg);
+        
+        // get data coordinates and thread
+        static void handle_vrpn(void *userdata, vrpn_TRACKERCB track);
+        void run();
 
-    int getSocket();
+        int getSocket();
+        
+        void setupVrpn(std::string&);
+        std::string getMsg();
+        std::string getMsgRobots();
+        void parserMessage(std::string&);
+        void setNameTracker(std::string);
+        
+    private:
+        std::thread *mThread;
+        vrpn_Tracker_Remote *   mTracker;
+        vrpn_Connection *       mConnectionVrpn;
+        
+        int mSocket;
+        static std::string mMessage;
+        
+        boost::mutex mMutex;
+        
+        std::vector<CClient>* mFalseAgents;
+        
+        
+        std::string mTrackerName;
+        
+    public:
+        int mID;
+        static float mX;
+        static float mY;
+        static float mZ;
+        int mD;
+        int mK;
+        int mActivo;
+        
+        // flags to manipulate the logic game
+    private:
+        bool mGameOver;
+        int mTypeClient;
+        bool mInicio;
+        
+    };
     
-    void setupVrpn();
-    std::string getMsg();
-    std::string getMsgRobots();
-    
-    void setNameTracker(std::string);
-    
-private:
-    std::thread *mThread;
-    vrpn_Tracker_Remote *   mTracker;
-    vrpn_Connection *       mConnectionVrpn;
-    
-    int mSocket;
-    static std::string mMessage;
-    
-    boost::mutex mMutex;
-    
-    std::vector<CClient>* mFalseAgents;
-    
-    
-    std::string mTrackerName;
-    
-public:
-    int mID;
-    float mX;
-    float mY;
-    float mZ;
-    int mD;
-    int mK;
-    int mActivo;
-    
-    // flags to manipulate the logic game
-private:
-    bool mGameOver;
-    int mRobot;
-    bool mInicio;
-    
-};
+// ===========================================================================
+
+    class CGame{
+    public:
+        CGame();
+        ~CGame(){};
+        
+        static CGame &getInstance();
+        void lockLog();
+        void unlockLog();
+        
+        void lock();
+        void unlock();
+        
+        static boost::mutex mMutex;
+        static boost::mutex mMutexLog;
+        
+        static std::string mMessage;
+        static bool mIniciarJuego;
+        static int mCantidadEspias;
+        static const int CANTIDAD_ESPIAS_MAX;
+    private:
+        
+        
+        static std::shared_ptr<CGame> mInstance;
+        static std::once_flag           only_one;
+    };
 
 }
 
-
+// ===========================================================================
 
 
 inline static void MOVER(std::vector<rva::CClient>& agentes){
@@ -149,7 +177,7 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 	}
 }
 
-inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::string & msg){
+inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::map<int,rva::CClient>& cli){
     boost::property_tree::ptree ptre;
      
      //ptre.put("id", );
@@ -167,6 +195,8 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::s
     }
     // id,activo,x,y,z,robot
     
-    msg = std::move(std::string(buffer));
+    rva::CGame::getInstance().lock();
+    rva::CGame::getInstance().mMessage = std::move(std::string(buffer));
+    rva::CGame::getInstance().unlock();
 }
 #endif /* defined(__SocketRVA__CClient__) */

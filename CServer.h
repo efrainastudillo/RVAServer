@@ -39,6 +39,7 @@ namespace rva {
         void print(){std::cout<<"Posrt: "<<mPort<<std::endl<<"Socket: "<<mConn.getSocket()<<std::endl;};
         std::list<CClient> cli;
         std::vector<rva::CClient> mAgentes;
+        std::map< int, CClient> clientes;
         
     private:
         std::thread * mThread;
@@ -46,8 +47,6 @@ namespace rva {
         rva::CConnection mConn;
         static std::string mMESSAGE;
         int mPort;
-        
-        std::map< int, CClient> clientes;
         
         
         bool mStart;

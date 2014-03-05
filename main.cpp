@@ -19,18 +19,72 @@ void handle_function(void *userdata,vrpn_TRACKERCB track){
 }
 
 int main(int argc, const char * argv[])
-{
+{   
     rva::CServer server(7777);
     server.connect();
     server.start();
     
+    
     // main process
     while (true) {
-        LOG("Estoy en el main")
+        //LOG("Estoy en el main")
         sleep(6);
     }
-     
+    server.mAgentes.clear();
+    server.clientes.clear();
     server.joinThread();
+    
+    
+    
+    
+    /*
+    boost::property_tree::ptree pt;
+    boost::property_tree::ptree children;
+    boost::property_tree::ptree child1, child2, child3;
+    
+    
+    child1.put("childkeyA", 1);
+    child1.put("childkeyB", 2);
+    
+    child2.put("childkeyA", 3);
+    child2.put("childkeyB", 4);
+    
+    child3.put("childkeyA", 5);
+    child3.put("childkeyB", 6);
+    
+    children.push_back(std::make_pair("hola", child1));
+    children.push_back(std::make_pair("", child2));
+    children.push_back(std::make_pair("", child3));
+    
+    pt.put("testkey", "testvalue");
+    pt.add_child("MyArray", children);
+    
+    std::stringstream m;
+    write_json(m, pt);
+    
+    LOG(m.str())
+    
+    boost::property_tree::ptree p;
+    std::stringstream ss;
+    ss << m.str();
+    boost::property_tree::read_json(ss, p);
+    boost::property_tree::ptree ch = p.get_child("MyArray");
+    boost::property_tree::ptree k = ch.get_child("hola");
+    LOG(k.get<int>("childkeyC"))
+    */
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
    /* vrpn_Connection *connection;
     
@@ -45,7 +99,6 @@ int main(int argc, const char * argv[])
     
     tracker->register_change_handler(NULL, handle_function);
     //tracker->unregister_change_handler(NULL, handle_function);
-    
     
     std::vector<rva::CClient> magentes;
     
