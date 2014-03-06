@@ -184,14 +184,16 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
      std::stringstream ss;
      boost::property_tree::write_json(ss, ptre,false);
      ss.str().c_str();
+	 
+	 std::string mensaje;
     
     char buffer[1024] = {0};
     std::vector<rva::CClient>::iterator iter = agents.begin();
-	mMessage.append("{\"tipo_mensaje\":\"2\",\"jugadores\":\"[");
+	mensaje.append("{\"tipo_mensaje\":\"2\",\"jugadores\":\"[");
     while (iter != agents.end()) {
 		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
       //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
-        mMessage.append(buffer);
+        mensaje.append(buffer);
         iter++;
         //LOG(buffer)
     }
@@ -199,15 +201,15 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
 	while (iter != cli.end()) {
 		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
       //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
-        mMessage.append(buffer);
+        mensaje.append(buffer);
         iter++;
         //LOG(buffer)
     }
-	mMessage.append("]}");
+	mensaje.append("]}");
     // id,activo,x,y,z,robot
     
     rva::CGame::getInstance().lock();
-    rva::CGame::getInstance().mMessage = std::move(std::string(buffer));
+    rva::CGame::getInstance().mMessage = std::move(std::string(mensaje));
     rva::CGame::getInstance().unlock();
 }
 #endif /* defined(__SocketRVA__CClient__) */
