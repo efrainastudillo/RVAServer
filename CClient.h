@@ -1,4 +1,4 @@
-//
+﻿//
 //  CClient.h
 //  SocketRVA
 //
@@ -187,12 +187,23 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
     
     char buffer[1024] = {0};
     std::vector<rva::CClient>::iterator iter = agents.begin();
+	mMessage.append("{\"tipo_mensaje\":\"2\",\"jugadores\":\"[");
     while (iter != agents.end()) {
-        sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
-        //mMessage.append(buffer);
+		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
+      //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
+        mMessage.append(buffer);
         iter++;
         //LOG(buffer)
     }
+	std::vector<rva::CClient>::iterator iter = cli.begin();
+	while (iter != cli.end()) {
+		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
+      //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
+        mMessage.append(buffer);
+        iter++;
+        //LOG(buffer)
+    }
+	mMessage.append("]}");
     // id,activo,x,y,z,robot
     
     rva::CGame::getInstance().lock();
