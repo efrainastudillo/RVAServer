@@ -183,12 +183,12 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::map<int,rva::CClient>& cli){
 
     std::string mensaje;
-    boost::property_tree::ptree pt,jugadores,jugador1,jugador2,jugador3;
+    boost::property_tree::ptree pt,jugadores;
     
     std::vector<rva::CClient>::iterator iter = agents.begin();
     while (iter != agents.end()) {
         boost::property_tree::ptree jugadorI;
-        jugadorI.put("id","JUGADOR1");
+        jugadorI.put("id",iter->mID);
         
         jugadorI.put("activo",iter->mActivo);
         jugadorI.put("x",iter->mX);
@@ -204,18 +204,20 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
     while(iter2 != cli.end())
     {
         boost::property_tree::ptree jugadorI;
-        jugadorI.put("id","JUGADOR1");
+        jugadorI.put("id",iter2->second.mID);
+        jugadorI.put("x",iter2->second.mX);
+        jugadorI.put("y",iter2->second.mY);
+        jugadorI.put("z",iter2->second.mZ);
+        jugadorI.put("robot",iter2->second.mTypeClient);
+        jugadores.push_back(std::make_pair("",jugadorI));
         iter2++;
     }
     pt.add_child("jugadores",jugadores);
-    //pt.put("jugadore", "1");
     std::stringstream ss;
     write_json(ss, pt,false);
-    std::cout<<ss.str();
-    
-       
+
     rva::CGame::getInstance().lock();
-    rva::CGame::getInstance().mMessage = std::move(std::string(mensaje));
+    rva::CGame::getInstance().mMessage = ss.str();
     rva::CGame::getInstance().unlock();
 }
 #endif /* defined(__SocketRVA__CClient__) */

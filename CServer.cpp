@@ -102,7 +102,7 @@ void CServer::run(){
         std::srand((int)std::time(0));
         MOVER(mAgentes);//
         std::string msg;
-        //BUILD_MESSAGE_AGENTS(mAgentes, clientes);
+        BUILD_MESSAGE_AGENTS(mAgentes, clientes);
 
         CGame::getInstance().lockLog();
         LOG(" = WAITING TO FINISH =")

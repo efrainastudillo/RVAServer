@@ -177,6 +177,10 @@ void CClient::run(){
             parserMessage(msg);
             bytes = sendMsg(msg);
         }
+        else
+        {
+            continue;
+        }
         
         if (mTypeClient == ES_ESPIA)
         {
@@ -194,7 +198,6 @@ void CClient::run(){
         }else if (mTypeClient == ES_DETECTIVE)
         {
             LOG("Soy detective")
-
         }
         
         CGame::getInstance().lock();
@@ -261,7 +264,7 @@ void CClient::parserMessage(std::string & msg){
             if (modo == 0) {//detective
                 mTypeClient = ES_DETECTIVE;
             }
-            else
+            else //espia
             {
                 mTrackerName = p.get<std::string>("nombre_tracker");
                 setupVrpn(mTrackerName);
@@ -292,13 +295,13 @@ void CClient::parserMessage(std::string & msg){
     
     boost::property_tree::ptree ptre;
      
-     ptre.put("tipo_mensaje", 0);
-    ptre.put("estado", 1);
+    ptre.put("tipo_mensaje", 0);
+    ptre.put("estado", 1);// si es efectivo
     ptre.put("id", mID);
     
      std::stringstream ss;
      boost::property_tree::write_json(ss, ptre,false);
-     ss.str().c_str();
+    msg = ss.str();
 }
 
 //  ======================    getters     ============================
