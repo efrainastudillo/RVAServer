@@ -257,12 +257,20 @@ void CClient::parserMessage(std::string & msg){
         
         if (type_msg == 0)
         {
-            mTrackerName = p.get<std::string>("nombre_tracker");
-            setupVrpn(mTrackerName);
-            CGame::getInstance().lockLog();
-            LOG(mTrackerName)
-            LOG(p.get<std::string>("modo_juego"))
-            CGame::getInstance().unlockLog();
+            int modo = p.get<int>("modo_juego");
+            if (modo == 0) {//detective
+                mTypeClient = ES_DETECTIVE;
+            }
+            else
+            {
+                mTrackerName = p.get<std::string>("nombre_tracker");
+                setupVrpn(mTrackerName);
+                CGame::getInstance().lockLog();
+                mTypeClient = ES_ESPIA;
+                LOG(mTrackerName)
+                LOG(p.get<std::string>("modo_juego"))
+                CGame::getInstance().unlockLog();
+            }
             
         }else if (type_msg == 1)
         {
@@ -281,6 +289,16 @@ void CClient::parserMessage(std::string & msg){
         LOG("[ parserMessage ] "<<e.what())
         CGame::getInstance().unlockLog();
     }
+    
+    boost::property_tree::ptree ptre;
+     
+     ptre.put("tipo_mensaje", 0);
+    ptre.put("estado", 1);
+    ptre.put("id", mID);
+    
+     std::stringstream ss;
+     boost::property_tree::write_json(ss, ptre,false);
+     ss.str().c_str();
 }
 
 //  ======================    getters     ============================

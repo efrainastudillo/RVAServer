@@ -10,8 +10,10 @@
 
 using namespace rva;
 
-std::once_flag              CGame::only_one;
-std::shared_ptr< CGame >    CGame::mInstance = nullptr;
+//std::once_flag              CGame::only_one;
+//std::shared_ptr< CGame >    CGame::mInstance = nullptr;
+CGame*                      CGame::mInstance = NULL;
+boost::mutex                CGame::mMutexSingleton;
 bool                        CGame::mIniciarJuego = false;
 const int                   CGame::CANTIDAD_ESPIAS_MAX = 3;
 int                         CGame::mCantidadEspias = 0;
@@ -22,13 +24,20 @@ boost::mutex                CGame::mMutexLog;
 CGame::CGame(){}
 
 CGame &CGame::getInstance(){
-    std::call_once( CGame::only_one,[] ()
+    /*std::call_once( CGame::only_one,[] ()
        {
            CGame::mInstance.reset( new CGame() );
            
            std::cout << "safeSingleton::create_singleton_() | thread id " << std::endl;
        });
-    
+    */
+    if (mInstance == NULL) {
+        mMutexSingleton.lock();
+        if (mInstance == NULL) {
+            mInstance = new CGame();
+        }
+        mMutexSingleton.unlock();
+    }
     return *CGame::mInstance;
 }
 

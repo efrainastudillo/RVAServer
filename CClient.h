@@ -88,11 +88,11 @@ namespace rva {
         int mD;
         int mK;
         int mActivo;
-        
+        int mTypeClient;
         // flags to manipulate the logic game
     private:
         bool mGameOver;
-        int mTypeClient;
+        
         bool mInicio;
         
     };
@@ -115,14 +115,17 @@ namespace rva {
         static boost::mutex mMutexLog;
         
         static std::string mMessage;
+        
+        //static std::string
+        
         static bool mIniciarJuego;
         static int mCantidadEspias;
         static const int CANTIDAD_ESPIAS_MAX;
     private:
-        
-        
-        static std::shared_ptr<CGame> mInstance;
-        static std::once_flag           only_one;
+        static boost::mutex mMutexSingleton;
+        static CGame* mInstance;
+        //static std::shared_ptr<CGame> mInstance;
+        //static std::once_flag           only_one;
     };
 
 }
@@ -178,36 +181,39 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 }
 
 inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::map<int,rva::CClient>& cli){
-    boost::property_tree::ptree ptre;
-     
-     //ptre.put("id", );
-     std::stringstream ss;
-     boost::property_tree::write_json(ss, ptre,false);
-     ss.str().c_str();
-	 
-	 std::string mensaje;
+
+    std::string mensaje;
+    boost::property_tree::ptree pt,jugadores,jugador1,jugador2,jugador3;
     
-    char buffer[1024] = {0};
     std::vector<rva::CClient>::iterator iter = agents.begin();
-	mensaje.append("{\"tipo_mensaje\":\"2\",\"jugadores\":\"[");
     while (iter != agents.end()) {
-		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
-      //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
-        mensaje.append(buffer);
+        boost::property_tree::ptree jugadorI;
+        jugadorI.put("id","JUGADOR1");
+        
+        jugadorI.put("activo",iter->mActivo);
+        jugadorI.put("x",iter->mX);
+        jugadorI.put("y",iter->mY);
+        jugadorI.put("z",iter->mZ);
+        jugadorI.put("robot",iter->mTypeClient);
+        jugadores.push_back(std::make_pair("", jugadorI));
         iter++;
-        //LOG(buffer)
     }
-	std::vector<rva::CClient>::iterator iter = cli.begin();
-	while (iter != cli.end()) {
-		sprintf(buffer,"{\"id\":\"%d\",\"activo\":\"%d\",\"x\":\"%f\",\"y\":%f\",\"robot\":\"%d\"},",iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mD);
-      //  sprintf(buffer, "%d,%d,%f,%f,%f,%d" ,iter->mID,iter->mActivo,iter->mX,iter->mY,iter->mZ,iter->mD);
-        mensaje.append(buffer);
-        iter++;
-        //LOG(buffer)
-    }
-	mensaje.append("]}");
-    // id,activo,x,y,z,robot
     
+    
+    std::map<int,rva::CClient>::iterator iter2 = cli.begin();
+    while(iter2 != cli.end())
+    {
+        boost::property_tree::ptree jugadorI;
+        jugadorI.put("id","JUGADOR1");
+        iter2++;
+    }
+    pt.add_child("jugadores",jugadores);
+    //pt.put("jugadore", "1");
+    std::stringstream ss;
+    write_json(ss, pt,false);
+    std::cout<<ss.str();
+    
+       
     rva::CGame::getInstance().lock();
     rva::CGame::getInstance().mMessage = std::move(std::string(mensaje));
     rva::CGame::getInstance().unlock();

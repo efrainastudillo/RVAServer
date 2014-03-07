@@ -81,16 +81,18 @@ void CServer::run(){
         int client_fd = waitForClient();
         CClient client(client_fd);
         client.mID = index;
-        clientes.insert(std::make_pair(index, client));
-        index++;
-        CGame::getInstance().mCantidadEspias++;
+        
+        if (client.mTypeClient == ES_ESPIA) {
+            clientes.insert(std::make_pair(index, client));
+            index++;
+            CGame::getInstance().mCantidadEspias++;
+        }else
+        {
+            //if detective ya existe continue;
+            //CClient client(client_fd,2);//detective
+        }
+        
     }
-    
-    LOG("Wait for Detective")
-    int client_fd = waitForClient();
-    CClient client(client_fd,2);//detective
-    client.mID = index;
-    clientes.insert(std::make_pair(index, client));
 
 
     while (!mStart) {
