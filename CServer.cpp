@@ -97,11 +97,10 @@ void CServer::run(){
 
     while (!mStart) {
         if(!CGame::getInstance().mIniciarJuego){
-           // continue;
+            continue;
         }
         std::srand((int)std::time(0));
         MOVER(mAgentes);//
-        std::string msg;
         BUILD_MESSAGE_AGENTS(mAgentes, clientes);
 
         CGame::getInstance().lockLog();

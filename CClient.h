@@ -184,7 +184,8 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
 
     std::string mensaje;
     boost::property_tree::ptree pt,jugadores;
-    
+    pt.put("tipo_mensaje", 2);
+    //jugadores.put("tipo_mensaje", 2);
     std::vector<rva::CClient>::iterator iter = agents.begin();
     while (iter != agents.end()) {
         boost::property_tree::ptree jugadorI;

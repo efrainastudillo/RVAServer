@@ -281,11 +281,14 @@ void CClient::parserMessage(std::string & msg){
             if (ej == 1)
             {
                 CGame::getInstance().mIniciarJuego = true;
-                //mInicio = true;
             }else
             {
                 mGameOver = true;
             }
+        }else if (type_msg == 2)
+        {
+            //aqui procesar los seleccionados
+            
         }
     } catch (boost::property_tree::ptree_error &e) {
         CGame::getInstance().lockLog();
