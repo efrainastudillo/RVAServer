@@ -251,12 +251,13 @@ long CClient::rcvMsg(std::string &msg){
 // Parser message
 /////////////////////////////////////////////////////////////////////
 void CClient::parserMessage(std::string & msg){
+    int type_msg;
     try {
         boost::property_tree::ptree p;
         std::stringstream ss;
         ss << msg;
         boost::property_tree::read_json(ss, p);
-        int type_msg = p.get<int>("tipo_mensaje");
+         type_msg = p.get<int>("tipo_mensaje");
         
         if (type_msg == 0)
         {
@@ -296,15 +297,19 @@ void CClient::parserMessage(std::string & msg){
         CGame::getInstance().unlockLog();
     }
     
-    boost::property_tree::ptree ptre;
-     
-    ptre.put("tipo_mensaje", 0);
-    ptre.put("estado", 1);// si es efectivo
-    ptre.put("id", mID);
+     boost::property_tree::ptree ptre;  
+    if (type_msg == 0)
+        {   
+        ptre.put("tipo_mensaje", 0);
+        ptre.put("estado", 1);// si es efectivo
+        ptre.put("id_jugador", mID);
+    } else if (type_msg == 1){
+        ptre.put("inicio", 1);
+    }
     
-     std::stringstream ss;
-     boost::property_tree::write_json(ss, ptre,false);
-    msg = ss.str();
+     std::stringstream ss2;
+     boost::property_tree::write_json(ss2, ptre,false);
+    msg = ss2.str();
 }
 
 //  ======================    getters     ============================

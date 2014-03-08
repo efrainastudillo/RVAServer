@@ -76,7 +76,7 @@ void CServer::start(){
 // thread para obtener a cada cliente en la comunicacion por la red
 void CServer::run(){
     int index = 3; //El id de 0 - 2 son los falsos
-    while (CGame::getInstance().mCantidadEspias < CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
+   // while (CGame::getInstance().mCantidadEspias < CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
         LOG("Wait for client")
         int client_fd = waitForClient();
         CClient client(client_fd);
@@ -91,8 +91,8 @@ void CServer::run(){
             //if detective ya existe continue;
             //CClient client(client_fd,2);//detective
         }
-        
-    }
+        while (true);
+    //}
 
 
     while (!mStart) {
