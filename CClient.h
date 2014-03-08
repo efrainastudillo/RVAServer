@@ -117,6 +117,8 @@ namespace rva {
         static std::string mMessage;
         
         //static std::string
+        static std::vector<rva::CClient> mAgentes;
+        static std::map< int, CClient> clientes;
         
         static bool mIniciarJuego;
         static int mCantidadEspias;
@@ -219,6 +221,7 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
 
     rva::CGame::getInstance().lock();
     rva::CGame::getInstance().mMessage = ss.str();
+   // LOG(rva::CGame::getInstance().mMessage)
     rva::CGame::getInstance().unlock();
 }
 #endif /* defined(__SocketRVA__CClient__) */

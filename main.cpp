@@ -27,11 +27,11 @@ int main(int argc, const char * argv[])
     
     // main process
     while (true) {
-        //LOG("Estoy en el main")
+        LOG("Estoy en el main")
         sleep(6);
     }
-    server.mAgentes.clear();
-    server.clientes.clear();
+    rva::CGame::getInstance().mAgentes.clear();
+    rva::CGame::getInstance().clientes.clear();
     server.joinThread();
     
     

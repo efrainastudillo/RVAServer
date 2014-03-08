@@ -238,7 +238,7 @@ long CClient::rcvMsg(std::string &msg){
     char mesage[size];
     
     if((len = recv(mSocket, &mesage, size - 1, 0)) == -1){
-        perror("Error receiving message");
+        //perror("Error receiving message");
         return -1;
     }
     mesage[len] = '\0';
@@ -252,8 +252,9 @@ long CClient::rcvMsg(std::string &msg){
 /////////////////////////////////////////////////////////////////////
 void CClient::parserMessage(std::string & msg){
     int type_msg;
+    boost::property_tree::ptree p;
     try {
-        boost::property_tree::ptree p;
+        LOG(msg)
         std::stringstream ss;
         ss << msg;
         boost::property_tree::read_json(ss, p);
@@ -278,16 +279,17 @@ void CClient::parserMessage(std::string & msg){
             
         }else if (type_msg == 1)
         {
-            int ej = p.get<int>("estado_juego");
-            if (ej == 1)
-            {
+            //int ej = p.get<int>("estado_juego");
+            //if (ej == 1)
+            //{
                 CGame::getInstance().mIniciarJuego = true;
-            }else
-            {
-                mGameOver = true;
-            }
+            //}else
+            //{
+                //mGameOver = true;
+            //}
         }else if (type_msg == 2)
         {
+            //CGame::getInstance().mIniciarJuego = true;
             //aqui procesar los seleccionados
             
         }
@@ -299,16 +301,25 @@ void CClient::parserMessage(std::string & msg){
     
      boost::property_tree::ptree ptre;  
     if (type_msg == 0)
-        {   
+    {
         ptre.put("tipo_mensaje", 0);
         ptre.put("estado", 1);// si es efectivo
         ptre.put("id_jugador", mID);
-    } else if (type_msg == 1){
+    } else if (type_msg == 1)
+    {
         ptre.put("inicio", 1);
+    }else if (type_msg == 2)
+    {   int id = p.get<int>("seleccionado");
+        
+        //si es -1
+        LOG("esta es la respuesta: "<<CGame::getInstance().mMessage);
+        msg = CGame::getInstance().mMessage;
+        LOG("ENVIANDO")
+        return;
     }
     
-     std::stringstream ss2;
-     boost::property_tree::write_json(ss2, ptre,false);
+    std::stringstream ss2;
+    boost::property_tree::write_json(ss2, ptre,false);
     msg = ss2.str();
 }
 

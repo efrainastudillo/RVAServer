@@ -72,36 +72,39 @@ void CServer::start(){
     mThread = new std::thread(std::bind(&CServer::run, std::ref(*this)) );
 }
 
-
 // thread para obtener a cada cliente en la comunicacion por la red
 void CServer::run(){
     int index = 3; //El id de 0 - 2 son los falsos
-   // while (CGame::getInstance().mCantidadEspias < CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
+    while (CGame::getInstance().mCantidadEspias < 1/*CGame::getInstance().CANTIDAD_ESPIAS_MAX*/) {
         LOG("Wait for client")
         int client_fd = waitForClient();
         CClient client(client_fd);
         client.mID = index;
-        
+        sleep(1);
         if (client.mTypeClient == ES_ESPIA) {
-            clientes.insert(std::make_pair(index, client));
+            CGame::getInstance().clientes.insert(std::make_pair(index, client));
             index++;
             CGame::getInstance().mCantidadEspias++;
         }else
         {
             //if detective ya existe continue;
+            CClient client(client_fd,2);//detective
+            CGame::getInstance().clientes.insert(std::make_pair(50, client));
             //CClient client(client_fd,2);//detective
         }
-        while (true);
-    //}
-
+        break;
+    }
+ LOG(" = SALI DEL THREAD")
 
     while (!mStart) {
         if(!CGame::getInstance().mIniciarJuego){
             continue;
         }
+         LOG(" = INICIANDO AGENTES")
+        boost::property_tree::ptree p;
         std::srand((int)std::time(0));
-        MOVER(mAgentes);//
-        BUILD_MESSAGE_AGENTS(mAgentes, clientes);
+        MOVER(CGame::getInstance().mAgentes);//
+        BUILD_MESSAGE_AGENTS(CGame::getInstance().mAgentes, CGame::getInstance().clientes);
 
         CGame::getInstance().lockLog();
         LOG(" = WAITING TO FINISH =")
@@ -116,7 +119,7 @@ void CServer::connect(){
     
     for (int i = 0 ; i < 3;  i++) {
         c.mID = i;
-        mAgentes.push_back(c);
+        CGame::getInstance().mAgentes.push_back(c);
     }
     mConn.initialize();
     LOG(" = Configured = ")

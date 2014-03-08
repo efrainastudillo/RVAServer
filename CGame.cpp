@@ -20,6 +20,9 @@ int                         CGame::mCantidadEspias = 0;
 std::string                 CGame::mMessage = "";
 boost::mutex                CGame::mMutex;
 boost::mutex                CGame::mMutexLog;
+std::vector<rva::CClient>   CGame::mAgentes;
+std::map< int, CClient>     CGame::clientes;
+
 
 CGame::CGame(){}
 
