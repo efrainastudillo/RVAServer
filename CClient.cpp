@@ -190,6 +190,7 @@ void CClient::run(){
                 mTracker->mainloop();
                 mConnectionVrpn->mainloop();
                 //enviar coordenadas
+                LOG("BUCLEEEE")
 
             }else
             {

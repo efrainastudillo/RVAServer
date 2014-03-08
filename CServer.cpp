@@ -78,18 +78,20 @@ void CServer::run(){
     while (CGame::getInstance().mCantidadEspias < 1/*CGame::getInstance().CANTIDAD_ESPIAS_MAX*/) {
         LOG("Wait for client")
         int client_fd = waitForClient();
-        CClient client(client_fd);
+        CClient client{client_fd};
         client.mID = index;
         sleep(1);
         if (client.mTypeClient == ES_ESPIA) {
             CGame::getInstance().clientes.insert(std::make_pair(index, client));
+            //client = NULL;
             index++;
             CGame::getInstance().mCantidadEspias++;
         }else
         {
             //if detective ya existe continue;
-            CClient client(client_fd,2);//detective
+            CClient client2{client_fd,2};//detective
             CGame::getInstance().clientes.insert(std::make_pair(50, client));
+            //client = NULL;
             //CClient client(client_fd,2);//detective
         }
         break;
@@ -105,7 +107,7 @@ void CServer::run(){
         MOVER(CGame::getInstance().mAgentes);//
         BUILD_MESSAGE_AGENTS(CGame::getInstance().mAgentes, CGame::getInstance().clientes);
 
-        LOG(" = WAITING TO FINISH =")
+        //LOG(" = WAITING TO FINISH =")
     }
 }
 

@@ -208,6 +208,7 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
     {
         boost::property_tree::ptree jugadorI;
         jugadorI.put("id",iter2->second.mID);
+        jugadorI.put("activo",iter2->second.mActivo);
         jugadorI.put("x",iter2->second.mX);
         jugadorI.put("y",iter2->second.mY);
         jugadorI.put("z",iter2->second.mZ);
