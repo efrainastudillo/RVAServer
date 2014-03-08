@@ -200,15 +200,6 @@ void CClient::run(){
             LOG("Soy detective")
         }
         
-        CGame::getInstance().lock();
-        CGame::getInstance().mMessage = "Hello world probando mutex";
-        CGame::getInstance().unlock();
-        
-        CGame::getInstance().lockLog();
-        LOG(CGame::getInstance().mMessage)
-        LOG("Estoy en el cliente")
-        CGame::getInstance().unlockLog();
-        
     }
     LOG("!!BYE!!")
 }
@@ -270,8 +261,9 @@ void CClient::parserMessage(std::string & msg){
             {
                 mTrackerName = p.get<std::string>("nombre_tracker");
                 setupVrpn(mTrackerName);
-                CGame::getInstance().lockLog();
                 mTypeClient = ES_ESPIA;
+                
+                CGame::getInstance().lockLog();
                 LOG(mTrackerName)
                 LOG(p.get<std::string>("modo_juego"))
                 CGame::getInstance().unlockLog();

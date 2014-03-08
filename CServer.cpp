@@ -100,15 +100,12 @@ void CServer::run(){
         if(!CGame::getInstance().mIniciarJuego){
             continue;
         }
-         LOG(" = INICIANDO AGENTES")
         boost::property_tree::ptree p;
         std::srand((int)std::time(0));
         MOVER(CGame::getInstance().mAgentes);//
         BUILD_MESSAGE_AGENTS(CGame::getInstance().mAgentes, CGame::getInstance().clientes);
 
-        CGame::getInstance().lockLog();
         LOG(" = WAITING TO FINISH =")
-        CGame::getInstance().unlockLog();
     }
 }
 
