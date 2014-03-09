@@ -82,9 +82,9 @@ namespace rva {
         
     public:
         int mID;
-        static float mX;
-        static float mY;
-        static float mZ;
+         float mX;
+         float mY;
+         float mZ;
         int mD;
         int mK;
         int mActivo;

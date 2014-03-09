@@ -13,9 +13,7 @@ using namespace rva;
 
 
 std::string CClient::mMessage = "";
-float CClient::mX = 0;
-float CClient::mY = 0;
-float CClient::mZ = 0;
+
 CClient::CClient()// : mX(a),mY(b),mD(c),mK(d),mSocket(s),mID(i),mGameOver(go),mTrackerName(""),mRobot(1),mFalseAgents(mf),mThread(t)
 {
     mX = rand()%10;
@@ -155,13 +153,18 @@ void CClient::setupVrpn(std::string & name){
 
     mConnectionVrpn = vrpn_get_connection_by_name(connectionName);
     mTracker = new vrpn_Tracker_Remote(mTrackerName.c_str(), mConnectionVrpn);
-    mTracker->register_change_handler(NULL, handle_vrpn);
+    float posiciones[2];
+    mTracker->register_change_handler(&posiciones, handle_vrpn);
+    mX=posiciones[0];
+    mY=posiciones[1];
 }
 //========================   handle Vrpn    =========================
 // Aqui se obtiene los datos que envia el VRPN
 void CClient::handle_vrpn(void *userdata,vrpn_TRACKERCB track){
-    mX = track.pos[0];
-    mY = track.pos[2];
+    float pos[2];
+    pos[0]=track.pos[0];
+     pos[1]=track.pos[2];
+     userdata=&pos;
 }
 
 //========================   thread     =============================

@@ -79,17 +79,19 @@ void CServer::run(){
         LOG("Wait for client")
         int client_fd = waitForClient();
         CClient client{client_fd};
-        client.mID = index;
+        
         sleep(1);
         if (client.mTypeClient == ES_ESPIA) {
+            client.mID = index;
             CGame::getInstance().clientes.insert(std::make_pair(index, client));
             //client = NULL;
             index++;
             CGame::getInstance().mCantidadEspias++;
         }else
         {
+            client.mID = 50;
             //if detective ya existe continue;
-            CClient client2{client_fd,2};//detective
+            //CClient client2{client_fd,2};//detective
             CGame::getInstance().clientes.insert(std::make_pair(50, client));
             //client = NULL;
             //CClient client(client_fd,2);//detective
@@ -126,9 +128,10 @@ void CServer::run(){
 // configuracion inicial del socket para la comunicacion (socket, bind,  listen)
 void CServer::connect(){
     // inicializacion de los agentes falsos
-    rva::CClient c{};
+    
     
     for (int i = 0 ; i < 3;  i++) {
+        rva::CClient c{};
         c.mID = i;
         CGame::getInstance().mAgentes.push_back(c);
     }
