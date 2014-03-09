@@ -111,6 +111,7 @@ void CServer::run(){
         CGame::getInstance().mAgentes[i].mY = rand()%500;
     }
 
+    LOG(" = WAITING TO FINISH =1")
     while (!mStart) {
         if(!CGame::getInstance().mIniciarJuego){
             continue;
@@ -121,8 +122,9 @@ void CServer::run(){
         usleep(100);//
         BUILD_MESSAGE_AGENTS(CGame::getInstance().mAgentes, CGame::getInstance().clientes);
 
-        //LOG(" = WAITING TO FINISH =")
+        LOG(" = WAITING TO FINISH =2")
     }
+    LOG(" = WAITING TO FINISH =3")
 }
 
 // configuracion inicial del socket para la comunicacion (socket, bind,  listen)

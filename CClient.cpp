@@ -31,6 +31,7 @@ CClient::CClient()// : mX(a),mY(b),mD(c),mK(d),mSocket(s),mID(i),mGameOver(go),m
     mTypeClient = 1;//robot
     mFalseAgents = NULL;
     mThread = NULL;
+    _coordinates = NULL;
 }
 
 CClient::CClient(int sockt,int mtype_client) : mSocket(sockt){
@@ -42,6 +43,7 @@ CClient::CClient(int sockt,int mtype_client) : mSocket(sockt){
     mZ = rand()%10;
     mActivo = 1;
     mInicio = false;
+    _coordinates = new COORDINATES;
     
     mID = 0;
     mGameOver = false;
@@ -67,6 +69,8 @@ CClient::CClient(const CClient& cli){
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
     mInicio = cli.mInicio;
+    _coordinates = cli._coordinates;
+    
 }
 CClient::CClient(CClient&& cli){
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK; mZ = cli.mZ; mActivo = cli.mActivo;
@@ -78,6 +82,7 @@ CClient::CClient(CClient&& cli){
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
     mInicio = cli.mInicio;
+    _coordinates = cli._coordinates;
 
     cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
@@ -87,6 +92,7 @@ CClient::CClient(CClient&& cli){
     cli.mTypeClient = 0;
     //cli.mFalseAgents = NULL;
     cli.mThread = NULL;
+    cli._coordinates = NULL;
 }
 CClient& CClient::operator=(const CClient& cli){
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
@@ -98,7 +104,7 @@ CClient& CClient::operator=(const CClient& cli){
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
     mInicio = cli.mInicio;
-    
+    _coordinates = cli._coordinates;
     return *this;
 }
 CClient& CClient::operator=(CClient&& cli){
@@ -110,6 +116,7 @@ CClient& CClient::operator=(CClient&& cli){
     mTypeClient = cli.mTypeClient;
     mFalseAgents = cli.mFalseAgents;
     mThread = cli.mThread;
+    _coordinates = cli._coordinates;
     
     cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
@@ -119,6 +126,7 @@ CClient& CClient::operator=(CClient&& cli){
     cli.mTypeClient = 0;
     cli.mFalseAgents = NULL;
     cli.mThread = NULL;
+    cli._coordinates = NULL;
     return *this;
 }
 
@@ -153,18 +161,18 @@ void CClient::setupVrpn(std::string & name){
 
     mConnectionVrpn = vrpn_get_connection_by_name(connectionName);
     mTracker = new vrpn_Tracker_Remote(mTrackerName.c_str(), mConnectionVrpn);
-    float posiciones[2];
-    mTracker->register_change_handler(&posiciones, handle_vrpn);
-    mX=posiciones[0];
-    mY=posiciones[1];
+
+    mTracker->register_change_handler(_coordinates, handle_vrpn);
+
 }
 //========================   handle Vrpn    =========================
 // Aqui se obtiene los datos que envia el VRPN
 void CClient::handle_vrpn(void *userdata,vrpn_TRACKERCB track){
-    float pos[2];
-    pos[0]=track.pos[0];
-     pos[1]=track.pos[2];
-     userdata=&pos;
+    //LOG("Coordenadas => "<<pos[0]<<" , "<<pos[1])
+    (*(COORDINATES *)userdata)._x = track.pos[0];
+    (*(COORDINATES *)userdata)._y = track.pos[2];
+     (*(COORDINATES *)userdata)._z = track.pos[1];
+
 }
 
 //========================   thread     =============================

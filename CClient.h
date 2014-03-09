@@ -34,6 +34,12 @@
 
 namespace rva {
     
+    struct COORDINATES{
+        float _x;
+        float _y;
+        float _z;
+    };
+    
     enum{ES_ESPIA = 0, ES_ROBOT ,ES_DETECTIVE};
     
     class CClient{
@@ -89,10 +95,11 @@ namespace rva {
         int mK;
         int mActivo;
         int mTypeClient;
+        
+        COORDINATES* _coordinates;
         // flags to manipulate the logic game
     private:
         bool mGameOver;
-        
         bool mInicio;
         
     };
@@ -234,6 +241,10 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
         boost::property_tree::ptree jugadorI;
         jugadorI.put("id",iter2->second.mID);
         jugadorI.put("activo",iter2->second.mActivo);
+        //jugadorI.put("x",iter2->second.mX);
+        iter2->second.mX = iter2->second._coordinates->_x;
+        iter2->second.mY = iter2->second._coordinates->_y;
+        iter2->second.mZ = iter2->second._coordinates->_z;
         jugadorI.put("x",iter2->second.mX);
         jugadorI.put("y",iter2->second.mY);
         jugadorI.put("z",iter2->second.mZ);
