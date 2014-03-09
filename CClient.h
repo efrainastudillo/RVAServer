@@ -137,6 +137,31 @@ namespace rva {
 
 inline static void MOVER(std::vector<rva::CClient>& agentes){
     int i,j,m;
+    int x,y;
+    srand(time(NULL));
+    for (i=0;i<agentes.size();i++){
+        x = rand()%10;
+        y = rand()%10;
+
+        if (rand()%2 == 0){
+            x = x*-1;
+        }
+        if (rand()%2 == 0){
+            y = y*-1;
+        }
+
+        agentes[i].mX = agentes[i].mX + x;
+        agentes[i].mY = agentes[i].mY + y;
+        if (agentes[i].mX <100)
+            agentes[i].mX=100;
+        else if (agentes[i].mX>1050)
+            agentes[i].mX = 1050;
+        if (agentes[i].mY <0)
+            agentes[i].mY=0;
+        else if (agentes[i].mY>450)
+            agentes[i].mY = 450;
+        usleep(20000);
+    }/*
 	for (i=0;i<agentes.size();i++){
 		if (agentes[i].mK==0){
 			m = rand()%10;
@@ -158,15 +183,15 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 						}
 					}
 				}
-				if (agentes[i].mX < 0 )
-					agentes[i].mX = 0;
-				if (agentes[i].mX > 9 )
-					agentes[i].mX = 9;
+				if (agentes[i].mX < 150 )
+					agentes[i].mX = 150;
+				if (agentes[i].mX > 1050 )
+					agentes[i].mX = 1050;
 				if (agentes[i].mY < 0 )
 					agentes[i].mY = 0;
-				if (agentes[i].mY > 9 )
-					agentes[i].mY = 9;
-				if (agentes[i].mX == 0 || agentes[i].mX == 9 || agentes[i].mY == 0 || agentes[i].mY == 9){
+				if (agentes[i].mY > 450 )
+					agentes[i].mY = 450;
+				if (agentes[i].mX == 150 || agentes[i].mX == 1050 || agentes[i].mY == 0 || agentes[i].mY == 450){
 					if (agentes[i].mD == 0)
 						agentes[i].mD = 1;
 					else
@@ -179,7 +204,7 @@ inline static void MOVER(std::vector<rva::CClient>& agentes){
 		else{
 			agentes[i].mK--;
 		}
-	}
+	}*/
 }
 
 inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::map<int,rva::CClient>& cli){

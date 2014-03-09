@@ -98,13 +98,25 @@ void CServer::run(){
     }
  LOG(" = SALI DEL THREAD")
 
+    // posiciones aleatorias iniciales
+
+    int i;
+
+    srand(time(NULL));
+
+    for (i=0;i<CGame::getInstance().mAgentes.size();i++){
+        CGame::getInstance().mAgentes[i].mX = rand()%900 + 100;
+        CGame::getInstance().mAgentes[i].mY = rand()%500;
+    }
+
     while (!mStart) {
         if(!CGame::getInstance().mIniciarJuego){
             continue;
         }
         boost::property_tree::ptree p;
         std::srand((int)std::time(0));
-        MOVER(CGame::getInstance().mAgentes);//
+        MOVER(CGame::getInstance().mAgentes);
+        usleep(100);//
         BUILD_MESSAGE_AGENTS(CGame::getInstance().mAgentes, CGame::getInstance().clientes);
 
         //LOG(" = WAITING TO FINISH =")
