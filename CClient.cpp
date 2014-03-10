@@ -275,10 +275,6 @@ void CClient::parserMessage(std::string & msg){
                 setupVrpn(mTrackerName);
                 mTypeClient = ES_ESPIA;
                 
-                CGame::getInstance().lockLog();
-                LOG(mTrackerName)
-                LOG(p.get<std::string>("modo_juego"))
-                CGame::getInstance().unlockLog();
             }
             
         }else if (type_msg == 1)
