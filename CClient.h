@@ -52,7 +52,7 @@ namespace rva {
         CClient(CClient&& cli);
         CClient& operator=(const CClient& cli);
         CClient& operator=(CClient&& cli);
-        
+
         ~CClient();
         
         //  comunication with clients
@@ -68,11 +68,13 @@ namespace rva {
         void setupVrpn(std::string&);
         std::string getMsg();
         std::string getMsgRobots();
-        void parserMessage(std::string&);
+        std::string parserMessage(std::string&);
         void setNameTracker(std::string);
         
     private:
-        std::thread *mThread;
+        
+        std::shared_ptr<std::thread> mThread;
+        //std::thread *mThread;
         vrpn_Tracker_Remote *   mTracker;
         vrpn_Connection *       mConnectionVrpn;
         
@@ -120,21 +122,23 @@ namespace rva {
         
         static boost::mutex mMutex;
         static boost::mutex mMutexLog;
-        
-        static std::string mMessage;
+        void changeState(int, std::vector<rva::CClient> &mAgentes,std::map< int, CClient> &clientes);
+        std::string mMessage;
         
         //static std::string
         static std::vector<rva::CClient> mAgentes;
         static std::map< int, CClient> clientes;
         
-        static bool mIniciarJuego;
+        int cantidadJugadoresFalsos;
+        bool mTerminarJuego;
+        bool mIniciarJuego;
         static int mCantidadEspias;
         static const int CANTIDAD_ESPIAS_MAX;
     private:
         static boost::mutex mMutexSingleton;
-        static CGame* mInstance;
-        //static std::shared_ptr<CGame> mInstance;
-        //static std::once_flag           only_one;
+        //static CGame* mInstance;
+        static std::shared_ptr<CGame> mInstance;
+        static std::once_flag           only_one;
     };
 
 }
@@ -258,7 +262,6 @@ inline static void BUILD_MESSAGE_AGENTS(std::vector<rva::CClient> &agents,std::m
 
     rva::CGame::getInstance().lock();
     rva::CGame::getInstance().mMessage = ss.str();
-   // LOG(rva::CGame::getInstance().mMessage)
     rva::CGame::getInstance().unlock();
 }
 #endif /* defined(__SocketRVA__CClient__) */

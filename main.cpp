@@ -23,8 +23,16 @@ int main(int argc, const char * argv[])
     rva::CServer server(7777);
     server.connect();
     server.start();
-    
-    
+    /*
+    while (rva::CGame::getInstance().mCantidadEspias < 4 CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
+        LOG("Wait for client  123")
+        int client_fd = 0;
+        rva::CClient *client = new rva::CClient(2);
+        rva::CGame::getInstance().clientes.insert(std::make_pair(rva::CGame::getInstance().mCantidadEspias, std::move(*client)));
+        rva::CGame::getInstance().mCantidadEspias++;
+            LOG("ESPIAAaaaaaaaaa "<<rva::CGame::getInstance().mCantidadEspias)
+        }
+    */
     // main process
     while (true) {
         LOG("Estoy en el main")

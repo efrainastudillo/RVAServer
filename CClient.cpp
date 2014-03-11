@@ -55,11 +55,12 @@ CClient::CClient(int sockt,int mtype_client) : mSocket(sockt){
     if(fcntl(mSocket, F_SETFL, fcntl(mSocket, F_GETFL) | O_NONBLOCK) < 0) {
         perror("Error bloking socket");
     }
-    
-    mThread = new std::thread(std::bind(&CClient::run, std::ref(*this)) );
+    mThread = std::make_shared<std::thread>(std::bind(&CClient::run, std::ref(*this)));
+   //mThread = new std::thread(std::bind(&CClient::run, std::ref(*this)) );
 }
 
 CClient::CClient(const CClient& cli){
+    LOG("Copy Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -73,6 +74,7 @@ CClient::CClient(const CClient& cli){
     
 }
 CClient::CClient(CClient&& cli){
+    LOG("MOVE Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK; mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -90,11 +92,12 @@ CClient::CClient(CClient&& cli){
     cli.mGameOver = false;
     cli.mTrackerName = "";
     cli.mTypeClient = 0;
-    //cli.mFalseAgents = NULL;
-    cli.mThread = NULL;
+    cli.mFalseAgents = NULL;
+    //cli.mThread = NULL;
     cli._coordinates = NULL;
 }
 CClient& CClient::operator=(const CClient& cli){
+    LOG("copy assigment Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -108,6 +111,7 @@ CClient& CClient::operator=(const CClient& cli){
     return *this;
 }
 CClient& CClient::operator=(CClient&& cli){
+    LOG("MOVE assignment Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -125,7 +129,7 @@ CClient& CClient::operator=(CClient&& cli){
     cli.mTrackerName = "";
     cli.mTypeClient = 0;
     cli.mFalseAgents = NULL;
-    cli.mThread = NULL;
+    //cli.mThread = NULL;
     cli._coordinates = NULL;
     return *this;
 }
@@ -182,11 +186,17 @@ void CClient::run(){
 
     while (!mGameOver)
     {
+        /*
+        CGame::getInstance().lockLog();
+        LOG(""<<this->mThread->get_id())
+        CGame::getInstance().unlockLog();
+        sleep(3);
+        */
         bytes = rcvMsg(msg);
         if (bytes > 0)
         {
-            parserMessage(msg);
-            bytes = sendMsg(msg);
+            std::string m = parserMessage(msg);
+            bytes = sendMsg(m);
         }
         else
         {
@@ -200,9 +210,6 @@ void CClient::run(){
             if (CGame::getInstance().mIniciarJuego) {
                 mTracker->mainloop();
                 mConnectionVrpn->mainloop();
-                //enviar coordenadas
-                LOG("BUCLEEEE")
-
             }else
             {
                 
@@ -226,9 +233,9 @@ long CClient::sendMsg(std::string &msg){
         perror("Error to send data");
         return -1;
     }
-    CGame::getInstance().lockLog();
-    LOG("# bytes enviados : "<<len)
-    CGame::getInstance().unlockLog();
+    //CGame::getInstance().lockLog();
+    //LOG("# bytes enviados : "<<len)
+    //CGame::getInstance().unlockLog();
     return len;//cantidad de bytes enviados al cliente.
 }
 //====================================================================
@@ -253,15 +260,16 @@ long CClient::rcvMsg(std::string &msg){
 // ==================================================================
 // Parser message
 /////////////////////////////////////////////////////////////////////
-void CClient::parserMessage(std::string & msg){
+std::string CClient::parserMessage(std::string & msg){
     int type_msg;
     boost::property_tree::ptree p;
     try {
-        LOG(msg)
+        LOG("Nombre Traker:"<<mTrackerName<<" "<<std::endl<<CGame::getInstance().mCantidadEspias)
         std::stringstream ss;
         ss << msg;
+        LOG("RECIBIDO: "<<msg)
         boost::property_tree::read_json(ss, p);
-         type_msg = p.get<int>("tipo_mensaje");
+        type_msg = p.get<int>("tipo_mensaje");
         
         if (type_msg == 0)
         {
@@ -282,7 +290,7 @@ void CClient::parserMessage(std::string & msg){
             //int ej = p.get<int>("estado_juego");
             //if (ej == 1)
             //{
-                CGame::getInstance().mIniciarJuego = true;
+                //CGame::getInstance().mIniciarJuego = true;
             //}else
             //{
                 //mGameOver = true;
@@ -297,30 +305,46 @@ void CClient::parserMessage(std::string & msg){
         CGame::getInstance().lockLog();
         LOG("[ parserMessage ] "<<e.what())
         CGame::getInstance().unlockLog();
+    } catch (std::exception &e){
+        LOG(" [ parser Message ] "<<e.what())
     }
     
      boost::property_tree::ptree ptre;  
     if (type_msg == 0)
     {
         ptre.put("tipo_mensaje", 0);
-        ptre.put("estado", 1);// si es efectivo
+        ptre.put("estado", 1);// si el tracker no esta repetido
         ptre.put("id_jugador", mID);
+        
     } else if (type_msg == 1)
     {
+        while (!CGame::getInstance().mIniciarJuego) {
+            continue;
+        }
         ptre.put("inicio", 1);
+        
     }else if (type_msg == 2)
     {   int id = p.get<int>("seleccionado");
-        
         //si es -1
-        LOG("esta es la respuesta: "<<CGame::getInstance().mMessage);
-        msg = CGame::getInstance().mMessage;
-        LOG("ENVIANDO")
-        return;
+        CGame::getInstance().changeState(id, CGame::getInstance().mAgentes, CGame::getInstance().clientes);
+        //perdio detective
+        if (false/*CGame::getInstance().cantidadJugadoresFalsos < 2 == 0 && CGame::getInstance().mCantidadEspias >= CGame::getInstance().cantidadJugadoresFalsos*/) {
+            ptre.put("tipo_mensaje", 3);
+            ptre.put("estado", 1);// si es efectivo
+        }
+        else// gano detective
+        {
+            //LOG("esta es la respuesta: "<<CGame::getInstance().mMessage);
+            msg = CGame::getInstance().mMessage;
+            //LOG("ENVIANDO")
+        }
+        //msg = ;
+        return CGame::getInstance().mMessage;
     }
     
     std::stringstream ss2;
     boost::property_tree::write_json(ss2, ptre,false);
-    msg = ss2.str();
+    return ss2.str();
 }
 
 //  ======================    getters     ============================
