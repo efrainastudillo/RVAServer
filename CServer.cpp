@@ -75,11 +75,11 @@ void CServer::run(){
     while (CGame::getInstance().mCantidadEspias < CGame::getInstance().CANTIDAD_ESPIAS_MAX) {
         LOG("Wait for client")
         int client_fd = waitForClient();
-        CClient *client = new rva::CClient(client_fd);;
-        
+        CClient *client = new rva::CClient(client_fd);
         sleep(1);
         if (client->mTypeClient == ES_ESPIA) {
             client->mID = index;
+
             CGame::getInstance().clientes.insert(std::make_pair(index, *client));
             //client = NULL;
             index++;

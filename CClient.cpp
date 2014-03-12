@@ -60,7 +60,7 @@ CClient::CClient(int sockt,int mtype_client) : mSocket(sockt){
 }
 
 CClient::CClient(const CClient& cli){
-    LOG("Copy Constructor")
+    //LOG("Copy Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -74,7 +74,7 @@ CClient::CClient(const CClient& cli){
     
 }
 CClient::CClient(CClient&& cli){
-    LOG("MOVE Constructor")
+    //LOG("MOVE Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK; mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -88,7 +88,7 @@ CClient::CClient(CClient&& cli){
 
     cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
-    cli.mID = 0;
+    //cli.mID = 0;
     cli.mGameOver = false;
     cli.mTrackerName = "";
     cli.mTypeClient = 0;
@@ -97,7 +97,7 @@ CClient::CClient(CClient&& cli){
     cli._coordinates = NULL;
 }
 CClient& CClient::operator=(const CClient& cli){
-    LOG("copy assigment Constructor")
+    //LOG("copy assigment Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -111,7 +111,7 @@ CClient& CClient::operator=(const CClient& cli){
     return *this;
 }
 CClient& CClient::operator=(CClient&& cli){
-    LOG("MOVE assignment Constructor")
+    //LOG("MOVE assignment Constructor")
     mX = cli.mX; mY = cli.mY; mD = cli.mD; mK = cli.mK;mZ = cli.mZ; mActivo = cli.mActivo;
     mSocket = cli.mSocket;
     mID = cli.mID;
@@ -124,7 +124,7 @@ CClient& CClient::operator=(CClient&& cli){
     
     cli.mX = 0; cli.mY = 0; cli.mD = 0; cli.mK = 0;cli.mZ = 0;cli.mActivo = 0;
     cli.mSocket = 0;
-    cli.mID = 0;
+    //cli.mID = 0;
     cli.mGameOver = false;
     cli.mTrackerName = "";
     cli.mTypeClient = 0;
@@ -216,7 +216,7 @@ void CClient::run(){
             }
         }else if (mTypeClient == ES_DETECTIVE)
         {
-            LOG("Soy detective")
+            //LOG("Soy detective")
         }
         
     }
@@ -264,7 +264,7 @@ std::string CClient::parserMessage(std::string & msg){
     int type_msg;
     boost::property_tree::ptree p = boost::property_tree::ptree();
     try {
-        LOG("Nombre Traker:"<<mTrackerName<<" "<<std::endl<<CGame::getInstance().mCantidadEspias)
+        //LOG("Nombre Traker:"<<mTrackerName<<" "<<std::endl<<CGame::getInstance().mCantidadEspias)
         std::stringstream ss ;
         //std::stringstream ss1;
         ss<<msg;
@@ -280,14 +280,14 @@ std::string CClient::parserMessage(std::string & msg){
         {
             numMensaje++;
             int modo = p.get<int>("modo_juego");
-            LOG("MODO juego: "<<modo)
+            //LOG("MODO juego: "<<modo)
             if (modo == 0) {//detective
                 mTypeClient = ES_DETECTIVE;
             }
             else //espia
             {
                 mTrackerName = p.get<std::string>("nombre_tracker");
-                LOG("tracker name : "<<mTrackerName)
+                //LOG("tracker name : "<<mTrackerName)
                 setupVrpn(mTrackerName);
                 mTypeClient = ES_ESPIA;
             }
@@ -307,8 +307,6 @@ std::string CClient::parserMessage(std::string & msg){
         {
             //CGame::getInstance().mIniciarJuego = true;
             //aqui procesar los seleccionados
-
-            
         }
     } catch (boost::property_tree::ptree_error &e) {
         CGame::getInstance().lockLog();
@@ -324,6 +322,7 @@ std::string CClient::parserMessage(std::string & msg){
         ptre.put("tipo_mensaje", 0);
         ptre.put("estado", 1);// si el tracker no esta repetido
         ptre.put("id_jugador", mID);
+        LOG("ID del jugador : "<<mID)
         
     } else if (type_msg == 1)
     {
@@ -335,9 +334,9 @@ std::string CClient::parserMessage(std::string & msg){
     }else if (type_msg == 2)
     {   int id = -1;
         //si es -1
-        LOG(msg)
+        //LOG(msg)
         id=atoi(msg.c_str());
-
+        LOG("ID "<<id)
         CGame::getInstance().changeState(id, CGame::getInstance().mAgentes, CGame::getInstance().clientes);
         //gano detective
         if (CGame::getInstance().mCantidadEspias == 0) {
