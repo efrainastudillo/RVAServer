@@ -340,7 +340,7 @@ std::string CClient::parserMessage(std::string & msg){
 
         CGame::getInstance().changeState(id, CGame::getInstance().mAgentes, CGame::getInstance().clientes);
         //gano detective
-        if (CGame::getInstance().mCantidadEspias == 1) {
+        if (CGame::getInstance().mCantidadEspias == 0) {
             ptre.put("tipo_mensaje", 3);
             ptre.put("estado", 1);// si es efectivo
         }
