@@ -90,7 +90,7 @@ void CServer::run(){
             client->mID = 50;
             //if detective ya existe continue;
             //CClient client2{client_fd,2};//detective
-            CGame::getInstance().clientes.insert(std::make_pair(50, std::move(*client)));
+            CGame::getInstance().clientes.insert(std::make_pair(50, *client));
             //client = NULL;
             //CClient client(client_fd,2);//detective
         }

@@ -193,7 +193,7 @@ void CClient::run(){
         sleep(3);
         */
         bytes = rcvMsg(msg);
-        if (bytes > 0)
+        if (bytes > 5)
         {
             std::string m = parserMessage(msg);
             bytes = sendMsg(m);
@@ -262,27 +262,30 @@ long CClient::rcvMsg(std::string &msg){
 /////////////////////////////////////////////////////////////////////
 std::string CClient::parserMessage(std::string & msg){
     int type_msg;
-    boost::property_tree::ptree p;
+    boost::property_tree::ptree p = boost::property_tree::ptree();
     try {
         LOG("Nombre Traker:"<<mTrackerName<<" "<<std::endl<<CGame::getInstance().mCantidadEspias)
-        std::stringstream ss;
-        ss << msg;
-        LOG("RECIBIDO: "<<msg)
-        boost::property_tree::read_json(ss, p);
-        type_msg = p.get<int>("tipo_mensaje");
+        std::stringstream ss = std::stringstream(msg);
+        //std::stringstream ss1;
+
+        
+            boost::property_tree::read_json(ss, p);
+            type_msg = p.get<int>("tipo_mensaje");
+        
         
         if (type_msg == 0)
         {
             int modo = p.get<int>("modo_juego");
+            LOG("MODO juego: "<<modo)
             if (modo == 0) {//detective
                 mTypeClient = ES_DETECTIVE;
             }
             else //espia
             {
                 mTrackerName = p.get<std::string>("nombre_tracker");
+                LOG("tracker name : "<<mTrackerName)
                 setupVrpn(mTrackerName);
                 mTypeClient = ES_ESPIA;
-                
             }
             
         }else if (type_msg == 1)
@@ -299,6 +302,7 @@ std::string CClient::parserMessage(std::string & msg){
         {
             //CGame::getInstance().mIniciarJuego = true;
             //aqui procesar los seleccionados
+
             
         }
     } catch (boost::property_tree::ptree_error &e) {
@@ -324,22 +328,27 @@ std::string CClient::parserMessage(std::string & msg){
         ptre.put("inicio", 1);
         
     }else if (type_msg == 2)
-    {   int id = p.get<int>("seleccionado");
+    {   int id = -1;
         //si es -1
         CGame::getInstance().changeState(id, CGame::getInstance().mAgentes, CGame::getInstance().clientes);
-        //perdio detective
-        if (false/*CGame::getInstance().cantidadJugadoresFalsos < 2 == 0 && CGame::getInstance().mCantidadEspias >= CGame::getInstance().cantidadJugadoresFalsos*/) {
+        //gano detective
+        if (CGame::getInstance().mCantidadEspias == 0) {
             ptre.put("tipo_mensaje", 3);
             ptre.put("estado", 1);// si es efectivo
         }
-        else// gano detective
+        //perdio detective
+        else if(CGame::getInstance().cantidadJugadoresFalsos == 0){
+            ptre.put("tipo_mensaje", 3);
+            ptre.put("estado", 0);// si es efectivo
+        }
+        else
         {
             //LOG("esta es la respuesta: "<<CGame::getInstance().mMessage);
             msg = CGame::getInstance().mMessage;
             //LOG("ENVIANDO")
+            return CGame::getInstance().mMessage;
         }
-        //msg = ;
-        return CGame::getInstance().mMessage;
+        
     }
     
     std::stringstream ss2;
