@@ -348,7 +348,6 @@ std::string CClient::parserMessage(std::string & msg){
             //LOG("ENVIANDO")
             return CGame::getInstance().mMessage;
         }
-        
     }
     
     std::stringstream ss2;
