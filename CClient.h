@@ -97,6 +97,7 @@ namespace rva {
         int mK;
         int mActivo;
         int mTypeClient;
+        int numMensaje=0;
         
         COORDINATES* _coordinates;
         // flags to manipulate the logic game
@@ -136,9 +137,9 @@ namespace rva {
         static const int CANTIDAD_ESPIAS_MAX;
     private:
         static boost::mutex mMutexSingleton;
-        //static CGame* mInstance;
-        static std::shared_ptr<CGame> mInstance;
-        static std::once_flag           only_one;
+        static CGame* mInstance;
+       // static std::shared_ptr<CGame> mInstance;
+        //static std::once_flag           only_one;
     };
 
 }

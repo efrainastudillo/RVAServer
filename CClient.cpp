@@ -193,7 +193,7 @@ void CClient::run(){
         sleep(3);
         */
         bytes = rcvMsg(msg);
-        if (bytes > 5)
+        if (bytes > 0)
         {
             std::string m = parserMessage(msg);
             bytes = sendMsg(m);
@@ -265,16 +265,20 @@ std::string CClient::parserMessage(std::string & msg){
     boost::property_tree::ptree p = boost::property_tree::ptree();
     try {
         LOG("Nombre Traker:"<<mTrackerName<<" "<<std::endl<<CGame::getInstance().mCantidadEspias)
-        std::stringstream ss = std::stringstream(msg);
+        std::stringstream ss ;
         //std::stringstream ss1;
-
-        
+        ss<<msg;
+         if(numMensaje!=2){
             boost::property_tree::read_json(ss, p);
             type_msg = p.get<int>("tipo_mensaje");
+        }else{
+            type_msg=2;
+        }
         
         
         if (type_msg == 0)
         {
+            numMensaje++;
             int modo = p.get<int>("modo_juego");
             LOG("MODO juego: "<<modo)
             if (modo == 0) {//detective
@@ -290,6 +294,7 @@ std::string CClient::parserMessage(std::string & msg){
             
         }else if (type_msg == 1)
         {
+            numMensaje++;
             //int ej = p.get<int>("estado_juego");
             //if (ej == 1)
             //{
@@ -330,9 +335,12 @@ std::string CClient::parserMessage(std::string & msg){
     }else if (type_msg == 2)
     {   int id = -1;
         //si es -1
+        LOG(msg)
+        id=atoi(msg.c_str());
+
         CGame::getInstance().changeState(id, CGame::getInstance().mAgentes, CGame::getInstance().clientes);
         //gano detective
-        if (CGame::getInstance().mCantidadEspias == 0) {
+        if (CGame::getInstance().mCantidadEspias == 1) {
             ptre.put("tipo_mensaje", 3);
             ptre.put("estado", 1);// si es efectivo
         }
